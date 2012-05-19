@@ -1,0 +1,14 @@
+MACD*
+Moving*
+mqlcache.dat
+config/
+files/
+include/
+indicators/
+libraries/
+logs/
+presets/
+samples/
+scripts/
+templates/
+TrapRepeatIFD*
