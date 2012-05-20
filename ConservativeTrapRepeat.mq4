@@ -14,14 +14,14 @@
 
 //--- input parameters
 extern double    lots=0.01;
-extern int       trapIntervalPips=20;
-extern int       targetPips=20;
-extern int       magic=2000;
 extern int       slippage=3;
 extern double    lowlimitRate = 50.0;
+extern double    highlimitRate = 100.0;
+extern bool      isBuy = false;
 
 int tgtMagics[] =    { 10001,  10002,  10003, -1};
 double tgtPrices[] = {79.165, 79.265, 79.370, -1};
+int targetPips[] =   {    20,     20,     20, -1};
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 
@@ -60,28 +60,29 @@ void doEachTick() {
    int i = 0;
    while(true) {
       if (tgtMagics[i] == -1) break;
-      processOrder(tgtPrices[i], tgtMagics[i]);      
+      processOrder(tgtPrices[i], tgtMagics[i], targetPips[i], isBuy);      
       i++;
    }
 }
 
-void processOrder(double targetPrice, int magic) {
-   if (magic == 10001) {
-      if (isPositionOrdered(magic)) {
-         Print("XXOpen");
-      } else {
-         Print("XXNotOpen");
-      }
-   }
+void processOrder(double targetPrice, int magic, int targetPips, bool isBuy) {
    if (isPositionOrdered(magic)) return;
    
    int errCode;
    int ticket;
-   if (Ask <= targetPrice) {
-      ticket = doOrderSend(OP_BUYSTOP, lots, targetPrice, slippage, lowlimitRate, targetPrice + targetPips / 100.0, COMMENT, magic, errCode);
+   if (isBuy) {
+      if (Ask <= targetPrice) {
+         ticket = doOrderSend(OP_BUYSTOP, lots, targetPrice, slippage, lowlimitRate, targetPrice + targetPips / 100.0, COMMENT, magic, errCode);
+      } else {
+         ticket = doOrderSend(OP_BUYLIMIT, lots, targetPrice, slippage, lowlimitRate, targetPrice + targetPips / 100.0, COMMENT, magic, errCode);
+      }
    } else {
-      ticket = doOrderSend(OP_BUYLIMIT, lots, targetPrice, slippage, lowlimitRate, targetPrice + targetPips / 100.0, COMMENT, magic, errCode);
-   }   
+      if (Bid <= targetPrice) {
+         ticket = doOrderSend(OP_SELLLIMIT, lots, targetPrice, slippage, highlimitRate, targetPrice - targetPips / 100.0, COMMENT, magic, errCode);
+      } else {
+         ticket = doOrderSend(OP_SELLSTOP, lots, targetPrice, slippage, highlimitRate, targetPrice - targetPips / 100.0, COMMENT, magic, errCode);
+      }
+   }
 }
 
 // Is the position is ordered?
