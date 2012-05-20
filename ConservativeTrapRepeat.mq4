@@ -19,9 +19,9 @@ extern double    lowlimitRate = 50.0;
 extern double    highlimitRate = 100.0;
 extern bool      isBuy = false;
 
-int tgtMagics[] =    { 10001,  10002,  10003, -1};
-double tgtPrices[] = {79.165, 79.265, 79.370, -1};
-int targetPips[] =   {    20,     20,     20, -1};
+int tgtMagics[] =    { 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 10011, 10012, 10013, -1};
+double tgtPrices[] = {  79.9,  79.5,  79.1,  78.7,  78.3,  77.9,  77.5,  77.1,  76.7,  76.3,  75.9,  75.5,  75.1, -1};
+int targetPips[] =   {    40,    40,    40,    40,    40,    40,    40,    40,    40,    40,    40,    40,    40, -1};
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 
