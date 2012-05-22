@@ -19,12 +19,13 @@ extern double    lowlimitRate = 50.0;
 extern double    highlimitRate = 87.7;
 extern bool      enableDoublePosition = false;
 
-double tgtPrices[] = {  79.9,  79.6,  79.3,  79.0,  78.7,  78.4,  78.1,  77.8,  77.5,  77.2,  76.9,  76.6,  76.3,  76.0,  75.7,  75.4,  75.1, -1};
-int targetPips[] =   {    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30, -1};
-bool isBuys[] =      { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, -1};
+double tgtPrices[] = { 98.5, 97.5, -1};
+int targetPips[] =   {   30,   30, -1};
+bool isBuys[] =      { true, true, -1};
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
-int magicBase = 200000;
+int magicBaseAsk = 100000;
+int magicBaseBid = 200000;
 
 int poolMagics[];
 int poolTickets[];
@@ -58,16 +59,35 @@ int start() {
 
 // Run every tick.
 void doEachTick() {
-   findLongTrap();
-   findShortTrap();
+   int i = 0;
+   int n = 0;
+   while(true) {
+      if (tgtPrices[i] == -1) break;
+      n++;
+      i++;
+   }
+
+   if (Ask > tgtPrices[0]) {
+      // case 1    Ask > price1 > price2 > ...
+      Print("case 1");
+   } else if (Ask < tgtPrices[n - 1]) {
+      // case 2    price1 > price2 > .. > priceN > Ask
+      Print ("case 2");
+   } else {
+      // case 3    price1 > price2 > priceK > Ask > priceL > ..
+   }
+   
+//   findLongTrap();
+//   findShortTrap();
 }
 
+/*
 void findLongTrap() {
-    double price = Ask
+    double price = Ask;
     int i = 0;
     int n = 0;
     while(true) {
-        if tgtPrices[i] == -1) break; 
+        if (tgtPrices[i] == -1) break; 
         i++;
     }
 
@@ -79,55 +99,35 @@ void findLongTrap() {
         for (i = 0; i < n - 1; i++) {
             if (tgtPrices[i] <= price && price <= tgtPrices[i+1]) {
                 processTrap(tgtPrices[i+1], true);
-		break;
+		          break;
             }
         }
     }
 }
+*/
 
-void findShortTrap() {
-    double price = Ask
 
-    int i = 0;
-    int n = 0;
-    while(true) {
-        if tgtPrices[i] == -1) break; 
-        i++;
-    }
-
-    if (price < tgtPrices[0]) {
-        // NOP
-    } else if (price > tgtPrices[n-1]) {
-        processTrap(tgtPrices[n-1], false);
-    } else {
-        for (i = 0; i < n - 1; i++) {
-            if (tgtPrices[i] <= price && price <= tgtPrices[i+1]) {
-                processTrap(tgtPrices[i], false);
-                break;
-            }
-        }
-    }
-}
-
-void processTrap(double price, bool isBuy) {
-    // magic no is:
-    // if sell 79.9, 79.9 * 100 * 2 = 215980
-    // if buy  79.9, 79.9 * 100 * 2 + 1 = 215981
-    int magic = price * 200.0;
-    magic = magicBase + magic;
-    if (isBuy) {
-        magic = magic + 1;
-    }
-
-    Print("price=",price," magic=",magic, " order=", isBuy);
-
-    int ticket = getTicket(magic);
-    if (ticket == -1) {
-    }
-}
-
-void processOrder(double targetPrice, int magic, int targetPips, bool isBuy) {
 /*
+void processTrap(double price, bool isBuy) {
+    int magicBase = price * 100.0;
+    int ticketAsk = getTicket(magicBaseAsk + magicBase);
+    int ticketBid = getTicket(magicBaseBid + magicBase);
+    if (ticketAsk == -1 && ticketBid == -1) {
+      // There is no position.
+      int errCode;
+      if (isBuy) {
+         doOrderSend(OP_BUYSTOP, lots, price, slippage, lowlimitRate, price + 0.3, COMMENT, magicBaseAsk + magicBase, errCode);
+      } else {
+         doOrderSend(OP_SELLSTOP, lots, price, slippage, highlimitRate, price - 0.3, COMMENT, magicBaseAsk + magicBase, errCode);
+      }
+    } else {
+      // NOP
+    }
+}
+*/
+
+/*
+void processOrder(double targetPrice, int magic, int targetPips, bool isBuy) {
    if (isPositionOrdered(magic)) return;
    
    int errCode;
@@ -145,14 +145,8 @@ void processOrder(double targetPrice, int magic, int targetPips, bool isBuy) {
          ticket = doOrderSend(OP_SELLSTOP, lots, targetPrice, slippage, highlimitRate, targetPrice - targetPips / 100.0, COMMENT, magic, errCode);
       }
    }
+}
 */
-}
-
-// Is the position is ordered?
-bool isPositionOrdered(int magic) {
-   int ticket = getTicket(magic);   
-   return (ticket != -1);
-}
 
 // Send a order.
 //
