@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|                                             SimpleTrapRepeat.mq4 |
+//|                                       ConservativeTrapRepeat.mq4 |
 //|                                                         rami1942 |
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -10,7 +10,7 @@
 #include <stdlib.mqh>
 
 #define WAIT_TIME 5
-#define COMMENT "SimpleTrapRepeat"
+#define COMMENT "ConsTrapRepeat"
 
 //--- input parameters
 extern double    lots=0.01;
@@ -18,12 +18,12 @@ extern int       slippage=3;
 extern double    lowlimitRate = 50.0;
 extern double    highlimitRate = 87.7;
 
-double tgtPrices[] = {  79.9,  79.6,  79.3,  79.0,  78.7,  78.4,  78.1,  77.8,  77.5,  77.2,  76.9,  76.6,  76.3,  76.0,  75.7,  75.4,  75.1, -1};
+int tgtMagics[] =    { 10814, 10811, 10808, 10805, 10802, 10799, 10796, 10793, 10790, 10787, 10784, 10781, 10778, 10775, 10772, 10769, 10766, -1};
+double tgtPrices[] = {  81.4,  81.1,  80.8,  80.5,  80.2,  79.9,  79.6,  79.3,  79.0,  78.7,  78.4,  78.1,  77.8,  77.5,  77.2,  76.9,  76.6, -1};
 int targetPips[] =   {    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30, -1};
-bool isBuys[] =      { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, -1};
+bool isBuys[] =      {  true,  true,  true,  true,  true, false, false, false, false, false, false, false, false, false, false, false, false, -1};
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
-int magicBase = 10000;
 
 int poolMagics[];
 int poolTickets[];
@@ -59,9 +59,8 @@ int start() {
 void doEachTick() {
    int i = 0;
    while(true) {
-      if (tgtPrices[i] == -1) break;
-      int magic = magicBase + tgtPrices[i]*100;
-      processOrder(tgtPrices[i], magic, targetPips[i], isBuys[i]);
+      if (tgtMagics[i] == -1) break;
+      processOrder(tgtPrices[i], tgtMagics[i], targetPips[i], isBuys[i]);      
       i++;
    }
 }
