@@ -59,6 +59,9 @@ int start() {
 
 // Run every tick.
 void doEachTick() {
+   double price = Ask;
+
+   // トラップ本数カウント
    int i = 0;
    int n = 0;
    while(true) {
@@ -67,44 +70,71 @@ void doEachTick() {
       i++;
    }
 
-   if (Ask > tgtPrices[0]) {
-      // case 1    Ask > price1 > price2 > ...
+   // 現在価格に隣接しているトラップを選択してprocessTrapに投げる
+   if (price > tgtPrices[0]) {
+      // case 1    PRICE > price1 > price2 > ...
       Print("case 1");
-   } else if (Ask < tgtPrices[n - 1]) {
-      // case 2    price1 > price2 > .. > priceN > Ask
+      processTrap(tgtPrices[0], -1.0);
+
+   } else if (price < tgtPrices[n - 1]) {
+      // case 2    price1 > price2 > .. > priceN > PRICE
       Print ("case 2");
+      processTrap(-1.0, tgtPrices[n - 1]);
+
    } else {
-      // case 3    price1 > price2 > priceK > Ask > priceL > ..
+      // case 3    price1 > price2 > priceK > PRICE> priceL > ..
+      for (i = 0; i < n; i++) {
+          if (tgtPrices[i] > price && price > tgtPrices[i+1]) {
+              Print("case 3");
+              processTrap(tgtPrices[i], tgtPrices[i+1]);
+              break;
+          }
+      }
    }
    
-//   findLongTrap();
-//   findShortTrap();
 }
 
-/*
-void findLongTrap() {
-    double price = Ask;
-    int i = 0;
-    int n = 0;
-    while(true) {
-        if (tgtPrices[i] == -1) break; 
-        i++;
-    }
+void processTrap(double trapPriceH, double trapPriceL) {
+    // AskとBidがトラップを跨いでいる状態のときは処理をスキップ
+    if (Ask > trapPriceH && trapPriceH > Bid) return;
+    if (Ask > trapPriceL && trapPriceL > Bid) return;
 
-    if (price < tgtPrices[0]) {
-        processTrap(tgtPrices[0], true);
-    } else if (price > tgtPrices[n-1]) {
-        // NOP
-    } else {
-        for (i = 0; i < n - 1; i++) {
-            if (tgtPrices[i] <= price && price <= tgtPrices[i+1]) {
-                processTrap(tgtPrices[i+1], true);
-		          break;
-            }
+    Print("Up trap: ", trapPriceH);
+    Print("Dn trap: ", trapPriceL);
+
+    if (trapPriceH > 0) {
+        checkSetTrap(trapPriceH, true);
+    }
+    if (trapPriceL > 0) {
+        checkSetTrap(trapPriceL, false);
+    }
+}
+
+// トラップの状態をチェックし、必要であればトラップを仕掛ける
+void checkSetTrap(double price, bool isBuy) {
+    Print("Price = ", price, " isBuy=", isBuy);
+
+    int magicBase = price * 1000.0;
+    int ticketBuy = getTicket(magicBaseAsk + magicBase);
+    int ticketSell= getTicket(magicBaseBid + magicBase);
+
+    Print("ticketBuy =", ticketBuy, " ticketSell=", ticketSell);
+
+    if (ticketBuy == -1 && ticketSell == -1) {
+        // 注文が出てないので注文する
+        int errCode;
+        if (isBuy) {
+            doOrderSend(OP_BUYSTOP, lots, price, slippage, lowlimitRate, price + 0.3, COMMENT, magicBaseAsk + magicBase, errCode);
+        } else {
+            doOrderSend(OP_SELLSTOP, lots, price, slippage, highlimitRate, price - 0.3, COMMENT, magicBaseAsk + magicBase, errCode);
         }
+    } else {
+        Price("Price = ", price, " has already ordered. Skip it.")
     }
+
+
+
 }
-*/
 
 
 /*
