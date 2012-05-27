@@ -19,9 +19,8 @@ extern double    lowlimitRate = 50.0;
 extern double    highlimitRate = 87.7;
 extern bool      enableDoublePosition = false;
 
-double tgtPrices[] = { 98.5, 97.5, -1};
-int targetPips[] =   {   30,   30, -1};
-bool isBuys[] =      { true, true, -1};
+double tgtPrices[] = { 78.11, 77.86, 77.69, -1};
+int targetPips[] =   {    20,    20,    20, -1};
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 int magicBaseAsk = 100000;
@@ -73,20 +72,17 @@ void doEachTick() {
    // 現在価格に隣接しているトラップを選択してprocessTrapに投げる
    if (price > tgtPrices[0]) {
       // case 1    PRICE > price1 > price2 > ...
-      Print("case 1");
-      processTrap(tgtPrices[0], -1.0);
+      processTrap(tgtPrices[0], -1.0, targetPips[0], 0);
 
    } else if (price < tgtPrices[n - 1]) {
       // case 2    price1 > price2 > .. > priceN > PRICE
-      Print ("case 2");
-      processTrap(-1.0, tgtPrices[n - 1]);
+      processTrap(-1.0, tgtPrices[n - 1], 0, targetPips[n-1]);
 
    } else {
       // case 3    price1 > price2 > priceK > PRICE> priceL > ..
       for (i = 0; i < n; i++) {
           if (tgtPrices[i] > price && price > tgtPrices[i+1]) {
-              Print("case 3");
-              processTrap(tgtPrices[i], tgtPrices[i+1]);
+              processTrap(tgtPrices[i], tgtPrices[i+1], targetPips[i], targetPips[i+1]);
               break;
           }
       }
@@ -94,7 +90,7 @@ void doEachTick() {
    
 }
 
-void processTrap(double trapPriceH, double trapPriceL) {
+void processTrap(double trapPriceH, double trapPriceL, int targetPipsH, int targetPipsL) {
     // AskとBidがトラップを跨いでいる状態のときは処理をスキップ
     if (Ask > trapPriceH && trapPriceH > Bid) return;
     if (Ask > trapPriceL && trapPriceL > Bid) return;
@@ -103,15 +99,15 @@ void processTrap(double trapPriceH, double trapPriceL) {
     Print("Dn trap: ", trapPriceL);
 
     if (trapPriceH > 0) {
-        checkSetTrap(trapPriceH, true);
+        checkSetTrap(trapPriceH, true, targetPipsH);
     }
     if (trapPriceL > 0) {
-        checkSetTrap(trapPriceL, false);
+        checkSetTrap(trapPriceL, false, targetPipsL);
     }
 }
 
 // トラップの状態をチェックし、必要であればトラップを仕掛ける
-void checkSetTrap(double price, bool isBuy) {
+void checkSetTrap(double price, bool isBuy, int targetPips) {
     Print("Price = ", price, " isBuy=", isBuy);
 
     int magicBase = price * 1000.0;
@@ -124,12 +120,12 @@ void checkSetTrap(double price, bool isBuy) {
         // 注文が出てないので注文する
         int errCode;
         if (isBuy) {
-            doOrderSend(OP_BUYSTOP, lots, price, slippage, lowlimitRate, price + 0.3, COMMENT, magicBaseAsk + magicBase, errCode);
+            doOrderSend(OP_BUYSTOP, lots, price, slippage, lowlimitRate, price + targetPips/100.0, COMMENT, magicBaseAsk + magicBase, errCode);
         } else {
-            doOrderSend(OP_SELLSTOP, lots, price, slippage, highlimitRate, price - 0.3, COMMENT, magicBaseAsk + magicBase, errCode);
+            doOrderSend(OP_SELLSTOP, lots, price, slippage, highlimitRate, price - targetPips/100.0, COMMENT, magicBaseAsk + magicBase, errCode);
         }
     } else {
-        Price("Price = ", price, " has already ordered. Skip it.")
+//        Print("Price = ", price, " has already ordered. Skip it.");
     }
 
 
