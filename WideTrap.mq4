@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|                                           PatapataTrapRepeat.mq4 |
+//|                                                     WideTrap.mq4 |
 //|                                                         rami1942 |
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -10,21 +10,11 @@
 #include <stdlib.mqh>
 
 #define WAIT_TIME 5
-#define COMMENT "PatapataTrapRepeat"
 
 //--- input parameters
-extern double    lots=0.01;
-extern int       slippage=3;
-extern double    lowlimitRate = 50.0;
-extern double    highlimitRate = 87.7;
-extern bool      enableDoublePosition = false;
-
-double tgtPrices[] = {  81.4,  81.1,  80.8,  80.5,  80.2,  79.9,  79.6,  79.3,  79.0,  78.7,  78.4,  78.1,  77.8,  77.5,  77.2,  76.9,  76.6, -1};
-int targetPips[] =   {    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30, -1};
+extern double    price=77.65;
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
-int magicBaseAsk = 100000;
-int magicBaseBid = 200000;
 
 int poolMagics[];
 int poolTickets[];
@@ -41,93 +31,39 @@ int init() {
 int deinit() {
    return(0);
 }
-
 //+------------------------------------------------------------------+
 //| expert start function                                            |
 //+------------------------------------------------------------------+
 int start() {
-   if (IsTradeAllowed() == false) {
-      Print("Trade is not Allowed.");
-      return(0);
-   }
    initPool();
-   doEachTick();
+   
+   int magic = 1000000 + price * 1000.0;
+   int ticket = getTicket(magic);
+   
+   if (ticket == -1) {
+      int errCode;
+      if (Ask < price) {
+         doOrderSend(OP_BUYSTOP, 0.01, price, 3, 0, price+0.5, "TEST", magic, errCode);
+      } else {
+         doOrderSend(OP_BUYLIMIT, 0.01, price, 3, 0, price+0.5, "TEST", magic, errCode);
+      }
+   } else {
+      OrderSelect(ticket, SELECT_BY_TICKET);
+      if (OrderType() == OP_BUY) {
+         if (Bid > price + 0.040 && OrderStopLoss() == 0) {
+            Print("Modify guard");
+            OrderModify(ticket, OrderOpenPrice(), price + 0.015, OrderTakeProfit(), 0, MediumSeaGreen);
+         } else if (OrderStopLoss() != 0) {
+            if (Bid - OrderStopLoss() > 0.10) {
+               OrderModify(ticket, OrderOpenPrice(), Bid - 0.10, OrderTakeProfit(), 0, Red);
+            }
+         }
+      }
+   }
    return(0);
 }
 //+------------------------------------------------------------------+
 
-// Run every tick.
-void doEachTick() {
-   doEachTick2();
-}
-
-void doEachTick2() {
-   double price = Ask;
-   // トラップ数のカウント
-   int i = 0;
-   int n = 0;
-   while(true) {
-      if (tgtPrices[i] == -1) break;
-      n++;
-      i++;
-   }
-
-   if (price > tgtPrices[0]) {
-      // case 1    PRICE > price1 > price2 > ...
-      processTrap(tgtPrices[0], -1.0, targetPips[0], 0);
-
-   } else if (price < tgtPrices[n - 1]) {
-      // case 2    price1 > price2 > .. > priceN > PRICE
-      processTrap(-1.0, tgtPrices[n - 1], 0, targetPips[n-1]);
-
-   } else {
-      // case 3    price1 > price2 > priceK > PRICE> priceL > ..
-      for (i = 0; i < n; i++) {
-          if (tgtPrices[i] > price && price > tgtPrices[i+1]) {
-              processTrap(tgtPrices[i], tgtPrices[i+1], targetPips[i], targetPips[i+1]);
-              break;
-          }
-      }
-   }
-   
-}
-
-void processTrap(double trapPriceH, double trapPriceL, int targetPipsH, int targetPipsL) {
-    if (trapPriceH > 0 && !(Ask > trapPriceH && trapPriceH > Bid)) {
-        setSingleTrap(trapPriceH, true, targetPipsH);
-    }
-    if (trapPriceL > 0 && !(Ask > trapPriceL && trapPriceL > Bid)) {
-        setSingleTrap(trapPriceL, false, targetPipsL);
-    }
-}
-
-// トラップ1本仕掛ける
-void setSingleTrap(double price, bool isBuy, int targetPips) {
-   int magicBase = price * 1000.0;
-   int ticketBuy = getTicket(magicBaseAsk + magicBase);
-   int ticketSell= getTicket(magicBaseBid + magicBase);
-
-   // 現時点では、両建てはしない
-   if (ticketBuy == -1 && ticketSell == -1) {
-      int errCode;
-      if (isBuy) {
-         doOrderSend(OP_BUYSTOP, lots, price, slippage, lowlimitRate, price + targetPips/100.0, COMMENT, magicBaseAsk + magicBase, errCode);
-      } else {
-         doOrderSend(OP_SELLSTOP, lots, price, slippage, highlimitRate, price - targetPips/100.0, COMMENT, magicBaseAsk + magicBase, errCode);
-      }
-   } else {
-//        Print("Price = ", price, " has already ordered. Skip it.");
-   }
-}
-
-
-bool getTrendBuy() {
-   return (true);
-}
-
-// 注文発注
-//
-// returns ticket no or -1 if failed.
 int doOrderSend(int type, double lots, double openPrice, int slippage, double stoploss, double closePrice, string comment, int magic, int &errCode) {
    openPrice = NormalizeDouble(openPrice, Digits);
    stoploss = NormalizeDouble(stoploss, Digits);
@@ -159,7 +95,7 @@ int doOrderSend(int type, double lots, double openPrice, int slippage, double st
    }
 }
 
-// プールの初期化
+// Initialize poolMagics and poolTickets.
 void initPool() {
    int n = 0;
    for (int i = 0; i < OrdersTotal(); i++) {
@@ -183,7 +119,7 @@ void initPool() {
    }
 }
 
-// プールを検索して指定したmagicからチケット番号を取得する
+// Retrieve magic no to ticket no.
 int getTicket(int magic) {
    for (int i = 0; i < ArraySize(poolMagics); i++) {
       if (poolMagics[i] == magic) return(poolTickets[i]);
