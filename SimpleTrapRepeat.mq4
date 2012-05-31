@@ -18,10 +18,10 @@ extern int       slippage=3;
 extern double    lowlimitRate = 50.0;
 extern double    highlimitRate = 87.7;
 
-int tgtMagics[] =    { 10799, 10796, 10793, 10790, 10781, 10778, 10775, 10772, 10769, 10766, -1};
-double tgtPrices[] = {  79.9,  79.6,  79.3,  79.0,  78.1,  77.8,  77.5,  77.2,  76.9,  76.6, -1};
+int tgtMagics[] =    { 10781, 10778, 10775, 10772, 10769, 10766, 10763, 10760, 10757, 10754, -1};
+double tgtPrices[] = {  78.1,  77.8,  77.5,  77.2,  76.9,  76.6,  76.3,  76.0,  75.7,  75.4, -1};
 int targetPips[] =   {    30,    30,    30,    30,    30,    30,    30,    30,    30,    30, -1};
-bool isBuys[] =      {  true,  true,  true,  true, false, false, false, false, false, false, -1};
+bool isBuys[] =      { false, false, false, false, false, false, false, false, false, false, -1};
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 
