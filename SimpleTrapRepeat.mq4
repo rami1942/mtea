@@ -13,15 +13,17 @@
 #define COMMENT "ConsTrapRepeat"
 
 //--- input parameters
-extern double    lots=0.01;
+extern double    lots=0.02;
 extern int       slippage=3;
-extern double    lowlimitRate = 50.0;
-extern double    highlimitRate = 87.7;
+extern double    lowlimitRate = 0;
+extern double    highlimitRate = 0;
+extern bool      stopOnly = true;
 
-int tgtMagics[] =    {  10760, 10757, 10754, 10751, 10748, 10745, 10742, 10739, 10736, 10733, 10730, -1};
-double tgtPrices[] = {   76.0,  75.7,  75.4,  75.1,  74.8,  74.5,  74.2,  73.9,  73.6,  73.3,  73.0, -1};
+int tgtMagics[]    = {  10984, 10981, 10978, 10975, 10972, 10969, 10966, 10963, 10960, 10957, 10954, -1};
+double tgtPrices[] = {   98.4,  98.1,  97.8,  97.5,  97.2,  96.9,  96.6,  96.3,  96.0,  95.7,  95.4, -1};
 int targetPips[] =   {     30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30, -1};
-bool isBuys[] =      {  false, false, false, false, false, false, false, false, false, false, -1};
+bool isBuys[] =      {  false, false, false, false, false, false, false, false, false, false, false, -1};
+
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 
@@ -60,27 +62,31 @@ void doEachTick() {
    int i = 0;
    while(true) {
       if (tgtMagics[i] == -1) break;
-      processOrder(tgtPrices[i], tgtMagics[i], targetPips[i], isBuys[i]);      
+      if (!isPositionOrdered(tgtMagics[i])) {
+         processOrder(tgtPrices[i], tgtMagics[i], targetPips[i], isBuys[i]);
+      }
       i++;
    }
 }
 
-void processOrder(double targetPrice, int magic, int targetPips, bool isBuy) {
-   if (isPositionOrdered(magic)) return;
-   
+void processOrder(double targetPrice, int magic, int targetPips, bool isBuy) {   
    int errCode;
-   int ticket;
+   
    if (isBuy) {
       if (Ask <= targetPrice) {
-         ticket = doOrderSend(OP_BUYSTOP, lots, targetPrice, slippage, lowlimitRate, targetPrice + targetPips / 100.0, COMMENT, magic, errCode);
+         doOrderSend(OP_BUYSTOP, lots, targetPrice, slippage, lowlimitRate, targetPrice + targetPips / 100.0, COMMENT, magic, errCode);
       } else {
-         ticket = doOrderSend(OP_BUYLIMIT, lots, targetPrice, slippage, lowlimitRate, targetPrice + targetPips / 100.0, COMMENT, magic, errCode);
+         if (!stopOnly) {
+            doOrderSend(OP_BUYLIMIT, lots, targetPrice, slippage, lowlimitRate, targetPrice + targetPips / 100.0, COMMENT, magic, errCode);
+         }
       }
    } else {
       if (Bid <= targetPrice) {
-         ticket = doOrderSend(OP_SELLLIMIT, lots, targetPrice, slippage, highlimitRate, targetPrice - targetPips / 100.0, COMMENT, magic, errCode);
+         if (!stopOnly) {
+            doOrderSend(OP_SELLLIMIT, lots, targetPrice, slippage, highlimitRate, targetPrice - targetPips / 100.0, COMMENT, magic, errCode);
+         }
       } else {
-         ticket = doOrderSend(OP_SELLSTOP, lots, targetPrice, slippage, highlimitRate, targetPrice - targetPips / 100.0, COMMENT, magic, errCode);
+         doOrderSend(OP_SELLSTOP, lots, targetPrice, slippage, highlimitRate, targetPrice - targetPips / 100.0, COMMENT, magic, errCode);
       }
    }
 }
