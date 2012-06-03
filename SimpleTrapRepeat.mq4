@@ -56,6 +56,25 @@ int start() {
    return(0);
 }
 //+------------------------------------------------------------------+
+/*
+void doTrailing(int trailingStop) {
+   for (int i = 0; i < OrdersTotal(); i++) {
+      if (OrderSelect(i, SELECT_BY_POS) == false) break;
+      if (OrderSymbol() != Symbol()) continue;
+      
+      if (OrderType() == OP_BUY && trailingStop > 0) {
+         if (OrderOpenPrice() <= Bid - trailingStop * Point && OrderStopLoss() < Bid - trailingStop *Point || OrderStopLoss() == 0) {
+            OrderModify(OrderTicket(), OrderOpenPrice(), Bid - trailingStop * Point, OrderTakeProfit(), 0, Green);
+         }
+      }
+      if (OrderType() == OP_SELL && trailingStop > 0) {
+         if (OrderOpenPrice() >= Ask + trailingStop * Point && OrderStopLoss() > Ask + trailingStop * Point || OrderStopLoss() == 0) {
+            OrderModify(OrderTicket(), OrderOpenPrice(), Ask + trailingStop * Point, OrderTakeProfit(), 0, Red);
+         }
+      }
+   }
+}
+*/
 
 // Run every tick.
 void doEachTick() {
