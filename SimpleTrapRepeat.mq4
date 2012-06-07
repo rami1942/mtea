@@ -13,17 +13,16 @@
 #define COMMENT "ConsTrapRepeat"
 
 //--- input parameters
-extern double    lots=0.02;
+extern double    lots=0.03;
 extern int       slippage=3;
 extern double    lowlimitRate = 0;
 extern double    highlimitRate = 0;
-extern bool      stopOnly = true;
-extern int       bumper = 15; // pips
+extern bool      stopOnly = false;
 
-int tgtMagics[]    = {  10984, 10981, 10978, 10975, 10972, 10969, 10966, 10963, 10960, 10957, 10954, -1};
-double tgtPrices[] = {   98.4,  98.1,  97.8,  97.5,  97.2,  96.9,  96.6,  96.3,  96.0,  95.7,  95.4, -1};
-int targetPips[] =   {     30,    30,    30,    30,    30,    30,    30,    30,    30,    30,    30, -1};
-bool isBuys[] =      {  false, false, false, false, false, false, false, false, false, false, false, -1};
+int tgtMagics[]    = { 11007, 11004, 11001, 10998, 10995, 10992, 10989, 10986, 10983, -1};
+double tgtPrices[] = { 100.7, 100.4, 100.1,  99.8,  99.5,  99.2,  98.9,  98.6,  98.3, -1};
+int targetPips[] =   {    35,    35,    35,    35,    35,    35,    35,    35,    35, -1};
+bool isBuys[] =      { false, false, false, false, false, false, false, false, false, -1};
 
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
@@ -101,11 +100,7 @@ void processOrder(double targetPrice, int magic, int targetPips, bool isBuy) {
          }
       }
    } else {
-      double shift=0.0;
-      if (stopOnly) {
-         shift = bumper /100.0;
-      }
-      if (Bid <= targetPrice + shift) {
+      if (Bid <= targetPrice) {
          if (!stopOnly) {
             doOrderSend(OP_SELLLIMIT, lots, targetPrice, slippage, highlimitRate, targetPrice - targetPips / 100.0, COMMENT, magic, errCode);
          }
