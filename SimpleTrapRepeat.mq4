@@ -19,9 +19,9 @@ extern double    lowlimitRate = 0;
 extern double    highlimitRate = 0;
 extern bool      stopOnly = false;
 
-int tgtMagics[]    = { 11007, 11004, 11001, 10998, 10995, 10992, 10989, 10986, 10983, -1};
-double tgtPrices[] = { 100.7, 100.4, 100.1,  99.8,  99.5,  99.2,  98.9,  98.6,  98.3, -1};
-int targetPips[] =   {    35,    35,    35,    35,    35,    35,    35,    35,    35, -1};
+int tgtMagics[]    = { 11011, 11008, 11005, 11002, 10999, 10996, 10993, 10990, 10987 -1};
+double tgtPrices[] = { 101.1, 100.8, 100.5, 100.2,  99.9,  99.6,  99.3,  99.0,  98.7 -1};
+int targetPips[] =   {    35,    35,    35,    35,    35,    35,    35,    35,    35 -1};
 bool isBuys[] =      { false, false, false, false, false, false, false, false, false, -1};
 
 
