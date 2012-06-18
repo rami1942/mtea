@@ -13,7 +13,7 @@
 #define COMMENT "ConsTrapRepeat"
 
 //--- input parameters
-extern double    lots=0.03;
+extern double    lots=0.04;
 extern int       slippage=3;
 extern double    lowlimitRate = 0;
 extern double    highlimitRate = 0;
