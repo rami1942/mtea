@@ -14,8 +14,8 @@
 
 //--- input parameters
 extern double    lots=0.03;
+extern double    profit=0.10;
 extern int       slippage=3;
-extern bool      stopOnly = false;
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 
@@ -63,6 +63,11 @@ void doEachTick() {
       if (ticket4 != -1) OrderDelete(ticket4, Blue);
 
       // Start new martin.
+      int errCode;
+      doOrderSend(OP_SELL, lots, Bid, slippage, 0, Bid - profit, "Martin Base", 301, errCode);
+      processOrder(Bid + profit  , lots    , 302, profit*100);
+      processOrder(Bid + profit*2, lots * 2, 303, profit*100);
+      processOrder(Bid + profit*3, lots * 4, 304, profit*100);
       return;
    }
 
@@ -102,12 +107,16 @@ void doEachTick() {
    if (ticket2 != -1) {
       OrderSelect(ticket2, SELECT_BY_TICKET);
       if (OrderType() == OP_SELL) {
-
+         OrderSelect(ticket1, SELECT_BY_TICKET);
+         if (OrderTakeProfit() < OrderOpenPrice()) {
+            double price1 = OrderOpenPrice();
+            OrderModify(ticket1, OrderOpenPrice(), 0, price1, 0, Orange);
+         }
       }
    }
 }
 
-void processOrder(double targetPrice, int magic, int targetPips) {   
+void processOrder(double targetPrice, double lots, int magic, int targetPips) {   
    int errCode;
    
    if (Bid <= targetPrice) {
