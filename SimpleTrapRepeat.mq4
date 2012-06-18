@@ -19,10 +19,10 @@ extern double    lowlimitRate = 0;
 extern double    highlimitRate = 0;
 extern bool      stopOnly = false;
 
-int tgtMagics[]    = { 11014  11011, 11008, 11005, 11002, 10999, 10996, 10993, 10990, -1};
-double tgtPrices[] = { 101.4, 101.1, 100.8, 100.5, 100.2,  99.9,  99.6,  99.3,  99.0, -1};
-int targetPips[] =   {    35,    35,    35,    35,    35,    35,    35,    35,    35, -1};
-bool isBuys[] =      { false, false, false, false, false, false, false, false, false, -1};
+int tgtMagics[]    = {  11014,  11011,  11008,  11005,  11002,  10999,  10996,  10993,  10990, -1};
+double tgtPrices[] = { 101.36, 101.06, 100.76, 100.46, 100.16,  99.86,  99.56,  99.26,  98.96, -1};
+int targetPips[] =   {     35,     35,     35,     35,     35,     35,     35,     35,     35, -1};
+bool isBuys[] =      {  false,  false,  false,  false,  false,  false,  false,  false,  false, -1};
 
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
