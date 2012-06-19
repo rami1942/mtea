@@ -16,6 +16,7 @@
 extern double    lots=0.03;
 extern double    profit=0.10;
 extern int       slippage=3;
+extern bool      stopNewOrder=false;
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 
@@ -63,28 +64,39 @@ void doEachTick() {
       if (ticket4 != -1) OrderDelete(ticket4, Blue);
 
       // Start new martin.
-      int errCode;
-      doOrderSend(OP_SELL, lots, Bid, slippage, 0, Bid - profit, "Martin Base", 301, errCode);
-      processOrder(Bid + profit  , lots    , 302, profit*100);
-      processOrder(Bid + profit*2, lots * 2, 303, profit*100);
-      processOrder(Bid + profit*3, lots * 4, 304, profit*100);
+      if (!stopNewOrder) {
+         int errCode;
+         doOrderSend(OP_SELL, lots, Bid, slippage, 0, Bid - profit, "Martin Base", 301, errCode);
+         processOrder(Bid + profit  , lots    , 302, profit*100);
+         processOrder(Bid + profit*2, lots * 2, 303, profit*100);
+         processOrder(Bid + profit*3, lots * 4, 304, profit*100);
+      }
       return;
    }
 
    if (ticket4 != -1) {
       OrderSelect(ticket4, SELECT_BY_TICKET);
       if (OrderType() == OP_SELL) {
-         // Take a position.
-
-         OrderSelect(ticket3, SELECT_BY_TICKET);
-         if (OrderTakeProfit() < OrderOpenPrice()) {
-            // if order is not modified.
-            double price3 = OrderOpenPrice();
-            OrderModify(ticket3, OrderOpenPrice(), 0, price3, 0, Orange);
-            OrderSelect(ticket2, SELECT_BY_TICKET);
-            OrderModify(ticket2, OrderOpenPrice(), 0, price3, 0, Orange);
-            OrderSelect(ticket1, SELECT_BY_TICKET);
-            OrderModify(ticket1, OrderOpenPrice(), 0, price3, 0, Orange);
+         if (Bid > OrderOpenPrice() + profit) {
+               OrderClose(ticket4, lots * 4, Bid, slippage, Orange);
+               OrderSelect(ticket2, SELECT_BY_TICKET);
+               double price2 = OrderOpenPrice();
+               OrderModify(ticket2, OrderOpenPrice(), 0, price2, 0, Orange);
+               OrderSelect(ticket3, SELECT_BY_TICKET);
+               OrderModify(ticket3, OrderOpenPrice(), 0, price2, 0, Orange);
+               OrderSelect(ticket1, SELECT_BY_TICKET);
+               OrderModify(ticket1, OrderOpenPrice(), 0, price2, 0, Orange);
+         } else {
+            OrderSelect(ticket3, SELECT_BY_TICKET);
+            if (OrderTakeProfit() < OrderOpenPrice()) {
+               // if order is not modified.
+               double price3 = OrderOpenPrice();
+               OrderModify(ticket3, OrderOpenPrice(), 0, price3, 0, Orange);
+               OrderSelect(ticket2, SELECT_BY_TICKET);
+               OrderModify(ticket2, OrderOpenPrice(), 0, price3, 0, Orange);
+               OrderSelect(ticket1, SELECT_BY_TICKET);
+               OrderModify(ticket1, OrderOpenPrice(), 0, price3, 0, Orange);
+            }
          }
          return;
       }
