@@ -19,7 +19,8 @@ extern double    lowlimitRate = 0;
 extern double    highlimitRate = 0;
 extern bool      stopOnly = false;
 extern bool      isBuy = false;
-extern int       targetPips = 35;
+extern double    targetPips = 0.35;
+extern double    basePrice = 99.86;
 
 int tgtMagics[]    = {  11014,  11011,  11008,  11005,  11002,  10999,  10996,  10993,  10990, -1};
 double tgtPrices[] = { 101.36, 101.06, 100.76, 100.46, 100.16,  99.86,  99.56,  99.26,  98.96, -1};
@@ -55,6 +56,7 @@ int start() {
    return(0);
 }
 //+------------------------------------------------------------------+
+
 /*
 void doTrailing(int ticket, int trailPips) {
    if (OrderSelect(ticket, SELECT_BY_TICKET) == false) return;
@@ -86,24 +88,24 @@ void doEachTick() {
    }
 }
 
-void processOrder(double targetPrice, int magic, int targetPips, bool isBuy) {   
+void processOrder(double targetPrice, int magic, double targetPips, bool isBuy) {   
    int errCode;
    
    if (isBuy) {
       if (Ask <= targetPrice) {
-         doOrderSend(OP_BUYSTOP, lots, targetPrice, slippage, lowlimitRate, targetPrice + targetPips / 100.0, COMMENT, magic, errCode);
+         doOrderSend(OP_BUYSTOP, lots, targetPrice, slippage, lowlimitRate, targetPrice + targetPips, COMMENT, magic, errCode);
       } else {
          if (!stopOnly) {
-            doOrderSend(OP_BUYLIMIT, lots, targetPrice, slippage, lowlimitRate, targetPrice + targetPips / 100.0, COMMENT, magic, errCode);
+            doOrderSend(OP_BUYLIMIT, lots, targetPrice, slippage, lowlimitRate, targetPrice + targetPips, COMMENT, magic, errCode);
          }
       }
    } else {
       if (Bid <= targetPrice) {
          if (!stopOnly) {
-            doOrderSend(OP_SELLLIMIT, lots, targetPrice, slippage, highlimitRate, targetPrice - targetPips / 100.0, COMMENT, magic, errCode);
+            doOrderSend(OP_SELLLIMIT, lots, targetPrice, slippage, highlimitRate, targetPrice - targetPips, COMMENT, magic, errCode);
          }
       } else {
-         doOrderSend(OP_SELLSTOP, lots, targetPrice, slippage, highlimitRate, targetPrice - targetPips / 100.0, COMMENT, magic, errCode);
+         doOrderSend(OP_SELLSTOP, lots, targetPrice, slippage, highlimitRate, targetPrice - targetPips, COMMENT, magic, errCode);
       }
    }
 }
