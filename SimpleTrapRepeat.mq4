@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|                                       ConservativeTrapRepeat.mq4 |
+//|                                             SimpleTrapRepeat.mq4 |
 //|                                                         rami1942 |
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -10,7 +10,7 @@
 #include <stdlib.mqh>
 
 #define WAIT_TIME 5
-#define COMMENT "ConsTrapRepeat"
+#define COMMENT "SimpleTrapRepeat"
 
 //--- input parameters
 extern double    lots=0.04;
@@ -18,12 +18,11 @@ extern int       slippage=3;
 extern double    lowlimitRate = 0;
 extern double    highlimitRate = 0;
 extern bool      stopOnly = false;
+extern bool      isBuy = false;
+extern int       targetPips = 35;
 
 int tgtMagics[]    = {  11014,  11011,  11008,  11005,  11002,  10999,  10996,  10993,  10990, -1};
 double tgtPrices[] = { 101.36, 101.06, 100.76, 100.46, 100.16,  99.86,  99.56,  99.26,  98.96, -1};
-int targetPips[] =   {     35,     35,     35,     35,     35,     35,     35,     35,     35, -1};
-bool isBuys[] =      {  false,  false,  false,  false,  false,  false,  false,  false,  false, -1};
-
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 
@@ -81,7 +80,7 @@ void doEachTick() {
    while(true) {
       if (tgtMagics[i] == -1) break;
       if (!isPositionOrdered(tgtMagics[i])) {
-         processOrder(tgtPrices[i], tgtMagics[i], targetPips[i], isBuys[i]);
+         processOrder(tgtPrices[i], tgtMagics[i], targetPips, isBuy);
       }
       i++;
    }
