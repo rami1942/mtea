@@ -66,35 +66,30 @@ void doEachTick() {
       // Start new martin.
       if (!stopNewOrder) {
          int errCode;
-         Print("Order 301");
-//         doOrderSend(OP_SELL, lots, Bid, slippage, 0, Bid - profit, "Martin Base", 301, errCode);
          ticket1 = doOrderSend(OP_SELL, lots, Bid, slippage, 0, 0, "Martin Base", 301, errCode);
          OrderSelect(ticket1, SELECT_BY_TICKET);
          OrderModify(ticket1, OrderOpenPrice(), 0, Bid - profit, 0, Orange);
-
-         Print("Order 302");
          processOrder(Bid + profit  , lots    , 302, profit*100);
-         Print("Order 303");
          processOrder(Bid + profit*2, lots * 2, 303, profit*100);
-         Print("Order 304");
          processOrder(Bid + profit*3, lots * 4, 304, profit*100);
       }
       return;
    }
 
+   double price1;
    double price2;
    if (ticket4 != -1) {
       OrderSelect(ticket4, SELECT_BY_TICKET);
       if (OrderType() == OP_SELL) {
          if (Bid > OrderOpenPrice() + profit) {
                OrderClose(ticket4, lots * 4, Bid, slippage, Orange);
-               OrderSelect(ticket2, SELECT_BY_TICKET);
-               price2 = OrderOpenPrice();
-               OrderModify(ticket2, OrderOpenPrice(), 0, price2, 0, Orange);
-               OrderSelect(ticket3, SELECT_BY_TICKET);
-               OrderModify(ticket3, OrderOpenPrice(), 0, price2, 0, Orange);
                OrderSelect(ticket1, SELECT_BY_TICKET);
-               OrderModify(ticket1, OrderOpenPrice(), 0, price2, 0, Orange);
+               price1 = OrderOpenPrice();
+               OrderModify(ticket2, OrderOpenPrice(), 0, price1, 0, Orange);
+               OrderSelect(ticket3, SELECT_BY_TICKET);
+               OrderModify(ticket3, OrderOpenPrice(), 0, price1, 0, Orange);
+               OrderSelect(ticket1, SELECT_BY_TICKET);
+               OrderModify(ticket1, OrderOpenPrice(), 0, price1, 0, Orange);
          } else {
             OrderSelect(ticket3, SELECT_BY_TICKET);
             if (OrderTakeProfit() < OrderOpenPrice()) {
@@ -130,7 +125,7 @@ void doEachTick() {
       if (OrderType() == OP_SELL) {
          OrderSelect(ticket1, SELECT_BY_TICKET);
          if (OrderTakeProfit() < OrderOpenPrice()) {
-            double price1 = OrderOpenPrice();
+            price1 = OrderOpenPrice();
             OrderModify(ticket1, OrderOpenPrice(), 0, price1, 0, Orange);
          }
       }
