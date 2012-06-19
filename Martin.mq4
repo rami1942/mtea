@@ -13,12 +13,12 @@
 #define COMMENT "Martin"
 
 //--- input parameters
-extern double    lots=0.03;
+extern double    lots=0.01;
 extern double    profit=0.10;
 extern int       slippage=3;
 extern bool      stopNewOrder=false;
 
-color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
+color MarkColor[6] = {DarkViolet, DarkViolet, DarkViolet, DarkViolet, DarkViolet, DarkViolet};
 
 int poolMagics[];
 int poolTickets[];
@@ -74,13 +74,14 @@ void doEachTick() {
       return;
    }
 
+   double price2;
    if (ticket4 != -1) {
       OrderSelect(ticket4, SELECT_BY_TICKET);
       if (OrderType() == OP_SELL) {
          if (Bid > OrderOpenPrice() + profit) {
                OrderClose(ticket4, lots * 4, Bid, slippage, Orange);
                OrderSelect(ticket2, SELECT_BY_TICKET);
-               double price2 = OrderOpenPrice();
+               price2 = OrderOpenPrice();
                OrderModify(ticket2, OrderOpenPrice(), 0, price2, 0, Orange);
                OrderSelect(ticket3, SELECT_BY_TICKET);
                OrderModify(ticket3, OrderOpenPrice(), 0, price2, 0, Orange);
@@ -107,7 +108,7 @@ void doEachTick() {
       if (OrderType() == OP_SELL) {
          OrderSelect(ticket2, SELECT_BY_TICKET);
          if (OrderTakeProfit() < OrderOpenPrice()) {
-            double price2 = OrderOpenPrice();
+            price2 = OrderOpenPrice();
             OrderModify(ticket2, OrderOpenPrice(), 0, price2, 0, Orange);
             OrderSelect(ticket1, SELECT_BY_TICKET);
             OrderModify(ticket1, OrderOpenPrice(), 0, price2, 0, Orange);
