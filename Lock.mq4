@@ -55,11 +55,11 @@ void doEachTick() {
       if (OrderMagicNumber() > 0) continue;
  
       if (OrderType() == OP_BUY) {
-         if (Bid > OrderOpenPrice() + trailBorder) {
+         if (Bid > OrderOpenPrice() + trailBorder && OrderOpenPrice() + lockWidth > OrderStopLoss()) {
             OrderModify(OrderTicket(), OrderOpenPrice(), OrderOpenPrice() + lockWidth, OrderTakeProfit(), 0, IndianRed);
          }
       } else if (OrderType() == OP_SELL) {
-         if (Ask < OrderOpenPrice() - trailBorder) {
+         if (Ask < OrderOpenPrice() - trailBorder && OrderOpenPrice() - lockWidth < OrderStopLoss()) {
             OrderModify(OrderTicket(), OrderOpenPrice(), OrderOpenPrice() - lockWidth, OrderTakeProfit(), 0, IndianRed);
          }
       }
