@@ -39,7 +39,6 @@ int start() {
       Print("Trade is not Allowed.");
       return(0);
    }
-   initPool();
    doEachTick();
    return(0);
 }
