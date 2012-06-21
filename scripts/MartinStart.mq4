@@ -63,17 +63,14 @@ void doEachTick() {
       if (ticket4 != -1) OrderDelete(ticket4, Blue);
 
       // Start new martin.
-      if (!stopNewOrder) {
-         int errCode;
-         double bidPrice = Bid;
-         ticket1 = doOrderSend(OP_SELL, lots, bidPrice, slippage, 0, 0, "Martin Base", 301, errCode);
-         OrderSelect(ticket1, SELECT_BY_TICKET);
-         OrderModify(ticket1, OrderOpenPrice(), 0, bidPrice - profit, 0, Orange);
-         processOrder(bidPrice + profit  , lots    , 302, profit*100);
-         processOrder(bidPrice + profit*2, lots * 2, 303, profit*100);
-         processOrder(bidPrice + profit*3, lots * 4, 304, profit*100);
-      }
-      return;
+      int errCode;
+      double bidPrice = Bid;
+      ticket1 = doOrderSend(OP_SELL, lots, bidPrice, slippage, 0, 0, "Martin Base", 301, errCode);
+      OrderSelect(ticket1, SELECT_BY_TICKET);
+      OrderModify(ticket1, OrderOpenPrice(), 0, bidPrice - profit, 0, Orange);
+      processOrder(bidPrice + profit  , lots    , 302, profit*100);
+      processOrder(bidPrice + profit*2, lots * 2, 303, profit*100);
+      processOrder(bidPrice + profit*3, lots * 4, 304, profit*100);
    }
 }
 

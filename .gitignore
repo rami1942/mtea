@@ -12,3 +12,4 @@ samples/
 templates/
 TrapRepeatIFD*
 *.ex4
+scripts/*.mq4

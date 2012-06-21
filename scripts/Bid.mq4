@@ -1,11 +1,12 @@
 #include <stderror.mqh>
 #include <stdlib.mqh>
 
+#define WAIT_TIME 5
+
 extern double  lots=0.04;
 extern double  slippage=3;
 
-color MarkColor[6] = {DarkViolet, DarkViolet, DarkViolet, DarkViolet, DarkViolet
-, DarkViolet};
+color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 
 int start() {
    if (IsTradeAllowed() == false) {
@@ -27,8 +28,7 @@ void process() {
 
 }
 
-int doOrderSend(int type, double lots, double openPrice, int slippage, double st
-oploss, double closePrice, string comment, int magic, int &errCode) {
+int doOrderSend(int type, double lots, double openPrice, int slippage, double stoploss, double closePrice, string comment, int magic, int &errCode) {
    openPrice = NormalizeDouble(openPrice, Digits);
    stoploss = NormalizeDouble(stoploss, Digits);
    closePrice = NormalizeDouble(closePrice, Digits);
