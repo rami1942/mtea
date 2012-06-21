@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|                                                       Martin.mq4 |
+//|                                       ConservativeTrapRepeat.mq4 |
 //|                                                         rami1942 |
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -16,7 +16,6 @@
 extern double    lots=0.01;
 extern double    profit=0.10;
 extern int       slippage=3;
-extern bool      stopNewOrder=false;
 
 color MarkColor[6] = {DarkViolet, DarkViolet, DarkViolet, DarkViolet, DarkViolet, DarkViolet};
 
@@ -75,62 +74,6 @@ void doEachTick() {
          processOrder(bidPrice + profit*3, lots * 4, 304, profit*100);
       }
       return;
-   }
-
-   double price1;
-   double price2;
-   if (ticket4 != -1) {
-      OrderSelect(ticket4, SELECT_BY_TICKET);
-      if (OrderType() == OP_SELL) {
-         if (Bid > OrderOpenPrice() + profit) {
-               OrderClose(ticket4, lots * 4, Bid, slippage, Orange);
-               OrderSelect(ticket1, SELECT_BY_TICKET);
-               price1 = OrderOpenPrice();
-               OrderSelect(ticket2, SELECT_BY_TICKET);
-               OrderModify(ticket2, OrderOpenPrice(), 0, price1, 0, Orange);
-               OrderSelect(ticket3, SELECT_BY_TICKET);
-               OrderModify(ticket3, OrderOpenPrice(), 0, price1, 0, Orange);
-               OrderSelect(ticket1, SELECT_BY_TICKET);
-               OrderModify(ticket1, OrderOpenPrice(), 0, price1, 0, Orange);
-         } else {
-            OrderSelect(ticket3, SELECT_BY_TICKET);
-            if (OrderTakeProfit() < OrderOpenPrice()) {
-               // if order is not modified.
-               double price3 = OrderOpenPrice();
-               OrderModify(ticket3, OrderOpenPrice(), 0, price3, 0, Orange);
-               OrderSelect(ticket2, SELECT_BY_TICKET);
-               OrderModify(ticket2, OrderOpenPrice(), 0, price3, 0, Orange);
-               OrderSelect(ticket1, SELECT_BY_TICKET);
-               OrderModify(ticket1, OrderOpenPrice(), 0, price3, 0, Orange);
-            }
-         }
-         return;
-      }
-   }
-
-   if (ticket3 != -1) {
-      OrderSelect(ticket3, SELECT_BY_TICKET);
-      if (OrderType() == OP_SELL) {
-         OrderSelect(ticket2, SELECT_BY_TICKET);
-         if (OrderTakeProfit() < OrderOpenPrice()) {
-            price2 = OrderOpenPrice();
-            OrderModify(ticket2, OrderOpenPrice(), 0, price2, 0, Orange);
-            OrderSelect(ticket1, SELECT_BY_TICKET);
-            OrderModify(ticket1, OrderOpenPrice(), 0, price2, 0, Orange);
-         }
-         return;
-      }
-   }
-
-   if (ticket2 != -1) {
-      OrderSelect(ticket2, SELECT_BY_TICKET);
-      if (OrderType() == OP_SELL) {
-         OrderSelect(ticket1, SELECT_BY_TICKET);
-         if (OrderTakeProfit() < OrderOpenPrice()) {
-            price1 = OrderOpenPrice();
-            OrderModify(ticket1, OrderOpenPrice(), 0, price1, 0, Orange);
-         }
-      }
    }
 }
 
