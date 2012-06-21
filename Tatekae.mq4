@@ -63,7 +63,7 @@ void doEachTick() {
          order984 = true;
 
          if (Ask < OrderStopLoss() - 0.5) {
-	    ModifyOrder(ticket, OrderOpenPrice(), OrderStopLoss() - 0.3, OrderTakeProfit(), 0, Yellow);
+	    OrderModify(ticket, OrderOpenPrice(), OrderStopLoss() - 0.3, OrderTakeProfit(), 0, Yellow);
 	 }
       }
    }
@@ -75,7 +75,7 @@ void doEachTick() {
          // ポジション持ってる
          order987 = true;
          if (Ask < OrderStopLoss() - 0.5) {
-	    ModifyOrder(ticket, OrderOpenPrice(), OrderStopLoss() - 0.3, OrderTakeProfit(), 0, Yellow);
+	    OrderModify(ticket, OrderOpenPrice(), OrderStopLoss() - 0.3, OrderTakeProfit(), 0, Yellow);
 	 }
       }
    } else {
