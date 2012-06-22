@@ -80,7 +80,7 @@ void doEachTick() {
    int i = 0;
    while(true) {
       if (tgtPrices[i] == -1) break;
-      int tgtMagic = 100000 + tgtprices[i] * 100;
+      int tgtMagic = 100000 + tgtPrices[i] * 100;
       if (!isPositionOrdered(tgtMagic)) {
          processOrder(tgtPrices[i], tgtMagic, targetPips, isBuy);
       }
