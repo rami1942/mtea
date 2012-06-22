@@ -13,7 +13,7 @@
 #define COMMENT "Martin"
 
 //--- input parameters
-extern double    lots=0.01;
+extern double    lots=0.02;
 extern double    profit=0.10;
 extern int       slippage=3;
 
