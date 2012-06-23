@@ -4,7 +4,6 @@ mqlcache.dat
 config/
 files/
 include/
-indicators/
 libraries/
 logs/
 presets/
@@ -13,3 +12,4 @@ templates/
 TrapRepeatIFD*
 *.ex4
 scripts/*.mq4
+indicators/*.mq4
