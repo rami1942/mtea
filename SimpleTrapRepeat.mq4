@@ -22,7 +22,6 @@ extern bool      isBuy = false;
 extern double    targetPips = 0.35;
 extern double    basePrice = 99.86;
 
-int tgtMagics[]    = { 110305, 110275, 110245, 110215, 110185, 110155, 110125, 110095, 110065, -1};
 double tgtPrices[] = { 103.05, 102.75, 102.45, 102.15, 101.85, 101.55, 101.25, 100.95, 100.65, -1};
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
@@ -80,9 +79,10 @@ void doTrailing(int ticket, int trailPips) {
 void doEachTick() {
    int i = 0;
    while(true) {
-      if (tgtMagics[i] == -1) break;
-      if (!isPositionOrdered(tgtMagics[i])) {
-         processOrder(tgtPrices[i], tgtMagics[i], targetPips, isBuy);
+      if (tgtPrices[i] == -1) break;
+      int tgtMagic = 100000 + tgtPrices[i] * 100;
+      if (!isPositionOrdered(tgtMagic)) {
+         processOrder(tgtPrices[i], tgtMagic, targetPips, isBuy);
       }
       i++;
    }
