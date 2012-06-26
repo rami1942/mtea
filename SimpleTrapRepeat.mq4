@@ -21,7 +21,7 @@ extern bool      stopOnly = false;
 extern bool      isBuy = false;
 extern double    targetPips = 0.35;
 
-double tgtPrices[] = { 103.05, 102.75, 102.45, 102.15, 101.85, 101.55, 101.25, 100.95, 100.65, 100.35, -1};
+double tgtPrices[] = { 102.15, 101.85, 101.55, 101.25, 100.95, 100.65, 100.35, 100.05, 99.75, -1};
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 
