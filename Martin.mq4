@@ -108,7 +108,7 @@ void doEachTick() {
       }
    }
 
-   if (ticket3 != -1) {
+   if (ticket3 != -1 && ticket4 != -1) {
       OrderSelect(ticket3, SELECT_BY_TICKET);
       if (OrderType() == OP_SELL) {
          OrderSelect(ticket2, SELECT_BY_TICKET);
@@ -122,7 +122,7 @@ void doEachTick() {
       }
    }
 
-   if (ticket2 != -1) {
+   if (ticket2 != -1 && ticket4 != -1) {
       OrderSelect(ticket2, SELECT_BY_TICKET);
       if (OrderType() == OP_SELL) {
          OrderSelect(ticket1, SELECT_BY_TICKET);
