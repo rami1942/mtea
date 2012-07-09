@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|                                                      Tatekae.mq4 |
+//|                                                          OCO.mq4 |
 //|                                                         rami1942 |
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -10,11 +10,14 @@
 #include <stdlib.mqh>
 
 #define WAIT_TIME 5
-#define COMMENT "Tatekae"
+#define COMMENT "OCO"
 
 //--- input parameters
 extern double    lots=0.03;
 extern int       slippage=3;
+
+extern int       ticket1=0;
+extern int       ticket2=0;
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 
@@ -50,56 +53,21 @@ int start() {
 
 // Run every tick.
 void doEachTick() {
-   int ticket;
-
-   bool order984 = false;
-   bool order987 = false;
-
-   ticket = getTicket(10984);
-   if (ticket != -1) {
-      OrderSelect(ticket, SELECT_BY_TICKET);
-      if (OrderType() == OP_SELL) {
-         // ポジション持ってる
-         order984 = true;
-
-         if (Ask < OrderStopLoss() - 0.5) {
-	    OrderModify(ticket, OrderOpenPrice(), OrderStopLoss() - 0.3, OrderTakeProfit(), 0, Yellow);
-	 }
+   if (OrderSelect(ticket1, SELECT_BY_TICKET)) {
+      if (OrderType() == ORDER_BUY || OrderType() == ORDER_SELL) {
+         if (OrderSelect(ticket2, SELECT_BY_TICKET)) {
+            DeleteOrder(ticket2, Red);
+         }
       }
    }
 
-   ticket = getTicket(10987);
-   if (ticket != -1) {
-      OrderSelect(ticket, SELECT_BY_TICKET);
-      if (OrderType() == OP_SELL) {
-         // ポジション持ってる
-         order987 = true;
-         if (Ask < OrderStopLoss() - 0.5) {
-	    OrderModify(ticket, OrderOpenPrice(), OrderStopLoss() - 0.3, OrderTakeProfit(), 0, Yellow);
-	 }
-      }
-   } else {
-      // オーダーも出ていない
-
-      // 一つ下のオーダーが生きている
-      if (order984) {
+   if (OrderSelect(ticket2, SELECT_BY_TICKET)) {
+      if (OrderType() == ORDER_BUY || OrderType() == ORDER_SELL) {
+         if (OrderSelect(ticket1, SELECT_BY_TICKET)) {
+            DeleteOrder(ticket1, Red);
+         }
       }
    }
-
-
-/*
-   int i = 0;
-   while(true) {
-      if (tgtMagics[i] == -1) break;
-      int ticket = getTicket(tgtMagics[i]);
-      if (!OrderSelect(ticket, SELECT_BY_TICKET)) continue;
-
-      if (OrderType() == OP_BUY || OrderType() == OP_SELL) {
-      }
-
-      i++;
-   }
-*/
 }
 
 void processOrder(double targetPrice, int magic, int targetPips, double limitPrice, double stopPrice, bool isBuy) {
