@@ -1,25 +1,25 @@
 //+------------------------------------------------------------------+
-//|                                                          OCO.mq4 |
+//|                                       ConservativeTrapRepeat.mq4 |
 //|                                                         rami1942 |
 //|                                                                  |
 //+------------------------------------------------------------------+
 #property copyright "rami1942"
 #property link      ""
+#property show_inputs
 
 #include <stderror.mqh>
 #include <stdlib.mqh>
 
 #define WAIT_TIME 5
-#define COMMENT "OCO"
+#define COMMENT "Martin"
 
 //--- input parameters
-extern double    lots=0.03;
+extern double    price=0;
+extern double    lots=0.02;
+extern double    profit=0.10;
 extern int       slippage=3;
 
-extern int       ticket1=0;
-extern int       ticket2=0;
-
-color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
+color MarkColor[6] = {DarkViolet, DarkViolet, DarkViolet, DarkViolet, DarkViolet, DarkViolet};
 
 int poolMagics[];
 int poolTickets[];
@@ -53,38 +53,40 @@ int start() {
 
 // Run every tick.
 void doEachTick() {
-   if (OrderSelect(ticket1, SELECT_BY_TICKET)) {
-      if (OrderType() == OP_BUY || OrderType() == OP_SELL) {
-         if (OrderSelect(ticket2, SELECT_BY_TICKET)) {
-            OrderDelete(ticket2, Red);
-         }
-      }
-   }
+   int ticket1 = getTicket(301);
+   int ticket2 = getTicket(302);
+   int ticket3 = getTicket(303);
+   int ticket4 = getTicket(304);
 
-   if (OrderSelect(ticket2, SELECT_BY_TICKET)) {
-      if (OrderType() == OP_BUY || OrderType() == OP_SELL) {
-         if (OrderSelect(ticket1, SELECT_BY_TICKET)) {
-            OrderDelete(ticket1, Red);
-         }
-      }
+   if (ticket1 == -1) {
+      // Cleanup orders.
+      if (ticket2 != -1) OrderDelete(ticket2, Blue);
+      if (ticket3 != -1) OrderDelete(ticket3, Blue);
+      if (ticket4 != -1) OrderDelete(ticket4, Blue);
+
+      // Start new martin.
+      int errCode;
+      /*
+      double bidPrice = Bid;
+      ticket1 = doOrderSend(OP_SELL, lots, bidPrice, slippage, 0, 0, "Martin Base", 301, errCode);
+      OrderSelect(ticket1, SELECT_BY_TICKET);
+      OrderModify(ticket1, OrderOpenPrice(), 0, bidPrice - profit, 0, Orange);
+      */
+      double bidPrice = price;
+      processOrder(bidPrice,            lots    , 301, profit*100);
+      processOrder(bidPrice + profit  , lots    , 302, profit*100);
+      processOrder(bidPrice + profit*2, lots * 2, 303, profit*100);
+      processOrder(bidPrice + profit*3, lots * 4, 304, profit*100);
    }
 }
 
-void processOrder(double targetPrice, int magic, int targetPips, double limitPrice, double stopPrice, bool isBuy) {
+void processOrder(double targetPrice, double lots, int magic, int targetPips) {   
    int errCode;
    
-   if (isBuy) {
-      if (Ask <= targetPrice) {
-         doOrderSend(OP_BUYSTOP, lots, targetPrice, slippage, stopPrice, limitPrice, COMMENT, magic, errCode);
-      } else {
-         doOrderSend(OP_BUYLIMIT, lots, targetPrice, slippage, stopPrice, limitPrice, COMMENT, magic, errCode);
-      }
+   if (Bid <= targetPrice) {
+      doOrderSend(OP_SELLLIMIT, lots, targetPrice, slippage, 0, targetPrice - targetPips / 100.0, COMMENT, magic, errCode);
    } else {
-      if (Bid <= targetPrice) {
-         doOrderSend(OP_SELLLIMIT, lots, targetPrice, slippage, stopPrice, limitPrice, COMMENT, magic, errCode);
-      } else {
-         doOrderSend(OP_SELLSTOP, lots, targetPrice, slippage, stopPrice, limitPrice, COMMENT, magic, errCode);
-      }
+      doOrderSend(OP_SELLSTOP, lots, targetPrice, slippage, 0, targetPrice - targetPips / 100.0, COMMENT, magic, errCode);
    }
 }
 
