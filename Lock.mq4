@@ -15,8 +15,8 @@
 #include <stdlib.mqh>
 
 //--- input parameters
-extern double    lockWidth=0.3;
-extern double    trailBorder=0.4;
+extern double    lockWidth=0.02;
+extern double    trailBorder=0.2;
 
 //+------------------------------------------------------------------+
 //| expert initialization function                                   |
