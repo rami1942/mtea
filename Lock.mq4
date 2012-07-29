@@ -53,11 +53,11 @@ void doEachTick() {
       // magicno付きの注文は無視する
       if (OrderMagicNumber() > 0) continue;
  
-      if (OrderType() == OP_BUY) {
+      if (OrderType() == OP_BUY && OrderTakeProfit() > 150.0) {
          if (Bid > OrderOpenPrice() + trailBorder && OrderOpenPrice() + lockWidth > OrderStopLoss()) {
             OrderModify(OrderTicket(), OrderOpenPrice(), OrderOpenPrice() + lockWidth, OrderTakeProfit(), 0, IndianRed);
          }
-      } else if (OrderType() == OP_SELL) {
+      } else if (OrderType() == OP_SELL && OrderTakeProfit() != 0 && OrderTakeProfit() < 50.0) {
          if (Ask < OrderOpenPrice() - trailBorder && OrderOpenPrice() - lockWidth < OrderStopLoss()) {
             OrderModify(OrderTicket(), OrderOpenPrice(), OrderOpenPrice() - lockWidth, OrderTakeProfit(), 0, IndianRed);
          }
