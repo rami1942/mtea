@@ -14,14 +14,14 @@
 
 //--- input parameters
 extern double    lots=0.04;
-extern int       slippage=3;
+extern int       slippage=1;
 extern double    lowlimitRate = 0;
 extern double    highlimitRate = 0;
 extern bool      stopOnly = false;
 extern bool      isBuy = false;
-extern double    targetPips = 0.35;
+extern double    targetPips = 0.25;
 
-double tgtPrices[] = { 97.35,  97.05,  96.75,  96.45,  96.15, 95.85, 95.55, 95.25, -1};
+double tgtPrices[] = { 95.8, 96.0, 96.2, 96.4, 96.6, 96.8, -1};
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 

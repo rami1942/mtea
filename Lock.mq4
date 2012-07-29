@@ -16,7 +16,7 @@
 
 //--- input parameters
 extern double    lockWidth=0.02;
-extern double    trailBorder=0.2;
+extern double    trailBorder=0.1;
 
 //+------------------------------------------------------------------+
 //| expert initialization function                                   |
