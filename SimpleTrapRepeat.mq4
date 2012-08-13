@@ -13,15 +13,15 @@
 #define COMMENT "SimpleTrapRepeat"
 
 //--- input parameters
-extern double    lots=0.04;
+extern double    lots=0.07;
 extern int       slippage=1;
 extern double    lowlimitRate = 0;
 extern double    highlimitRate = 0;
 extern bool      stopOnly = false;
 extern bool      isBuy = false;
-extern double    targetPips = 0.25;
+extern double    targetPips = 0.20;
 
-double tgtPrices[] = { 95.8, 96.0, 96.2, 96.4, 96.6, 96.8, -1};
+double tgtPrices[] = { 82.25, 82.45, 82.65, 82.85, 83.05, 83.25, 83.45, -1};
 
 color MarkColor[6] = {Red, Blue, Red, Blue, Red, Blue};
 
