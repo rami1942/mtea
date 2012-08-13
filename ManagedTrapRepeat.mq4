@@ -19,6 +19,7 @@
    int GetTrapList(double buffer[]);
    int UpdatePrice(double price);
    int GetTrapLots();
+   int UpdateShortPosition(double prices[]);
 #import
 
 //--- input parameters
@@ -64,23 +65,17 @@ int start() {
    }
    initPool();
    doEachTick();
+
+   
    return(0);
 }
+
+
 //+------------------------------------------------------------------+
 
 // Run every tick.
 void doEachTick() {
-/*
-   int i = 0;
-   while(true) {
-      if (tgtPrices[i] == -1) break;
-      int tgtMagic = 100000 + tgtPrices[i] * 100;
-      if (!isPositionOrdered(tgtMagic)) {
-         processOrder(tgtPrices[i], tgtMagic, targetPips, isBuy);
-      }
-      i++;
-   }
-*/
+
    double lots = GetTrapLots() / 100000.0;
    if (lots == 0) {
       Print("GetTrapLots failed.");
@@ -103,7 +98,25 @@ void doEachTick() {
    }
    
    UpdatePrice(Bid);
+   updateShort();   
+}
+
+void updateShort() {
+   double prices[];
+   int n = OrdersTotal();
+   ArrayResize(prices, n + 1);
    
+   int j = 0;
+   for (int i = 0; i < n; i++) {
+      if (!OrderSelect(i, SELECT_BY_POS)) continue;
+      if (OrderMagicNumber() < 100000 || OrderMagicNumber() >= 200000) continue;
+      if (OrderType() != OP_BUY && OrderType() != OP_SELL) continue;
+      prices[j] = OrderOpenPrice();
+      j++;
+   }
+   prices[j] = 0.0;
+   UpdateShortPosition(prices);
+
 }
 
 void processOrder(double targetPrice, double lots, int magic, double targetPips, bool isBuy) {   
