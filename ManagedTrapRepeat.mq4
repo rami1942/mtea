@@ -19,11 +19,13 @@
    int GetTrapList(double buffer[]);
    int UpdatePrice(double price);
    int GetTrapLots();
+   double GetTakeProfitWidth();
+   int UpdateShortPosition(double prices[]);
+   int UpdateLongPosition(double prices[], int lots[]);
+   int GetDeleteRequest(double prices[]);
 #import
 
 //--- input parameters
-extern double    targetPips = 0.2;
-
 extern int       slippage=1;
 extern double    lowlimitRate = 0;
 extern double    highlimitRate = 0;
@@ -64,28 +66,29 @@ int start() {
    }
    initPool();
    doEachTick();
+
+   
    return(0);
 }
+
+
 //+------------------------------------------------------------------+
 
 // Run every tick.
 void doEachTick() {
-/*
-   int i = 0;
-   while(true) {
-      if (tgtPrices[i] == -1) break;
-      int tgtMagic = 100000 + tgtPrices[i] * 100;
-      if (!isPositionOrdered(tgtMagic)) {
-         processOrder(tgtPrices[i], tgtMagic, targetPips, isBuy);
-      }
-      i++;
-   }
-*/
+
    double lots = GetTrapLots() / 100000.0;
    if (lots == 0) {
       Print("GetTrapLots failed.");
       return (0);
    }
+   
+   double targetPips = GetTakeProfitWidth();
+   if (targetPips == 0) {
+      Print("GetTakeProfitWidth failed.");
+      return(0);
+   }
+   
    
    double buffer[64];
    if (!GetTrapList(buffer)) {
@@ -103,7 +106,82 @@ void doEachTick() {
    }
    
    UpdatePrice(Bid);
+   deleteShort();
+   updateShort();
+   updateLong();
+}
+
+void deleteShort() {
+   double prices[];
+   int n = OrdersTotal();
+   ArrayResize(prices, n + 1);
+
+   if (!GetDeleteRequest(prices)) {
+      Print("GetDeleteRequest failed.");
+      return;
+   }
    
+   int i = 0;
+   while(true) {
+      if (prices[i] == 0.0) break;
+      
+      int magic = 100000 + prices[i] * 100;
+      int ticket = getTicket(magic);
+      
+      if (ticket == -1) continue;
+      if (!OrderSelect(ticket, SELECT_BY_TICKET)) continue;
+      if (OrderType() == OP_SELL || OrderSymbol() != Symbol()) continue;
+      
+      OrderDelete(ticket);
+      
+      
+      i++;
+   }
+}
+
+void updateLong() {
+   double prices[];
+   int lots[];
+   
+   int n = OrdersTotal();
+   ArrayResize(prices, n + 1);
+   ArrayResize(lots, n + 1);
+
+   int j = 0;
+   for (int i = 0; i < n; i++) {
+      if (!OrderSelect(i, SELECT_BY_POS)) continue;
+      if (OrderType() != OP_BUY || OrderSymbol() != Symbol()) continue;
+      
+      prices[j] = OrderOpenPrice();
+      lots[j] = OrderLots() * 100000;
+      
+      j++;
+   }
+   prices[j] = 0.0;
+   lots[j] = 0;
+   
+   if (!UpdateLongPosition(prices, lots)) {
+      Print("UpdateLong failed.");
+   }
+   
+}
+
+void updateShort() {
+   double prices[];
+   int n = OrdersTotal();
+   ArrayResize(prices, n + 1);
+   
+   int j = 0;
+   for (int i = 0; i < n; i++) {
+      if (!OrderSelect(i, SELECT_BY_POS)) continue;
+      if (OrderMagicNumber() < 100000 || OrderMagicNumber() >= 200000) continue;
+      if (OrderType() != OP_BUY && OrderType() != OP_SELL) continue;
+      prices[j] = OrderOpenPrice();
+      j++;
+   }
+   prices[j] = 0.0;
+   UpdateShortPosition(prices);
+
 }
 
 void processOrder(double targetPrice, double lots, int magic, double targetPips, bool isBuy) {   
