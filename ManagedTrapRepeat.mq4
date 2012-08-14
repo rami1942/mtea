@@ -19,8 +19,10 @@
    int GetTrapList(double buffer[]);
    int UpdatePrice(double price);
    int GetTrapLots();
-   int UpdateShortPosition(double prices[]);
    double GetTakeProfitWidth();
+   int UpdateShortPosition(double prices[]);
+   int UpdateLongPosition(double prices[], int lots[]);
+   int GetDeleteRequest(double prices[]);
 #import
 
 //--- input parameters
@@ -104,7 +106,35 @@ void doEachTick() {
    }
    
    UpdatePrice(Bid);
-   updateShort();   
+   updateShort();
+   updateLong();
+}
+
+void updateLong() {
+   double prices[];
+   int lots[];
+   
+   int n = OrdersTotal();
+   ArrayResize(prices, n + 1);
+   ArrayResize(lots, n + 1);
+
+   int j = 0;
+   for (int i = 0; i < n; i++) {
+      if (!OrderSelect(i, SELECT_BY_POS)) continue;
+      if (OrderType() != OP_BUY || OrderSymbol() != Symbol()) continue;
+      
+      prices[j] = OrderOpenPrice();
+      lots[j] = OrderLots() * 100000;
+      
+      j++;
+   }
+   prices[j] = 0.0;
+   lots[j] = 0;
+   
+   if (!UpdateLongPosition(prices, lots)) {
+      Print("UpdateLong failed.");
+   }
+   
 }
 
 void updateShort() {
