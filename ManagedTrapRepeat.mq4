@@ -20,11 +20,10 @@
    int UpdatePrice(double price);
    int GetTrapLots();
    int UpdateShortPosition(double prices[]);
+   double GetTakeProfitWidth();
 #import
 
 //--- input parameters
-extern double    targetPips = 0.2;
-
 extern int       slippage=1;
 extern double    lowlimitRate = 0;
 extern double    highlimitRate = 0;
@@ -81,6 +80,13 @@ void doEachTick() {
       Print("GetTrapLots failed.");
       return (0);
    }
+   
+   double targetPips = GetTakeProfitWidth();
+   if (targetPips == 0) {
+      Print("GetTakeProfitWidth failed.");
+      return(0);
+   }
+   
    
    double buffer[64];
    if (!GetTrapList(buffer)) {
