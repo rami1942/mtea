@@ -106,8 +106,37 @@ void doEachTick() {
    }
    
    UpdatePrice(Bid);
+   deleteShort();
    updateShort();
    updateLong();
+}
+
+void deleteShort() {
+   double prices[];
+   int n = OrdersTotal();
+   ArrayResize(prices, n + 1);
+
+   if (!GetDeleteRequest(prices)) {
+      Print("GetDeleteRequest failed.");
+      return;
+   }
+   
+   int i = 0;
+   while(true) {
+      if (prices[i] == 0.0) break;
+      
+      int magic = 100000 + prices[i] * 100;
+      int ticket = getTicket(magic);
+      
+      if (ticket == -1) continue;
+      if (!OrderSelect(ticket, SELECT_BY_TICKET)) continue;
+      if (OrderType() == OP_SELL || OrderSymbol() != Symbol()) continue;
+      
+      OrderDelete(ticket);
+      
+      
+      i++;
+   }
 }
 
 void updateLong() {
