@@ -176,7 +176,8 @@ void updateShort() {
       if (!OrderSelect(i, SELECT_BY_POS)) continue;
       if (OrderMagicNumber() < 100000 || OrderMagicNumber() >= 200000) continue;
       if (OrderType() != OP_BUY && OrderType() != OP_SELL) continue;
-      prices[j] = OrderOpenPrice();
+      prices[j] = (OrderMagicNumber() - 100000) / 100.0;       
+//      prices[j] = OrderOpenPrice();
       j++;
    }
    prices[j] = 0.0;
