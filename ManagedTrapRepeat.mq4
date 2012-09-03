@@ -20,7 +20,7 @@
    int UpdatePrice(double price);
    int GetTrapLots();
    double GetTakeProfitWidth();
-   int UpdateShortPosition(double prices[]);
+   int UpdateShortTrap(double prices[]);
    int UpdateLongPosition(double prices[], int lots[]);
    int GetDeleteRequest(double prices[]);
 #import
@@ -181,7 +181,7 @@ void updateShort() {
       j++;
    }
    prices[j] = 0.0;
-   UpdateShortPosition(prices);
+   UpdateShortTrap(prices);
 
 }
 
