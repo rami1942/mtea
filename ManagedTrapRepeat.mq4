@@ -16,6 +16,8 @@
 #import "fxc.dll"
    int InitEnv();
    int TerminateEnv();
+   int Connect();
+   int Disconnect();
    int GetTrapList(double buffer[]);
    int UpdatePrice(double price);
    int GetTrapLots();
@@ -65,8 +67,10 @@ int start() {
       return(0);
    }
    initPool();
-   doEachTick();
-
+   if (Connect() == 1) {
+      doEachTick();
+      Disconnect();
+   }
    
    return(0);
 }
