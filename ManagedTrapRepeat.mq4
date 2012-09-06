@@ -123,7 +123,6 @@ void doEachTick() {
    if (SetMark() == 1) {
       for (i = 0; i < OrdersTotal(); i++) {
          if (!OrderSelect(i, SELECT_BY_POS)) continue;
-         if (OrderSymbol() != Symbol()) continue;
          if (OrderType() != OP_BUY && OrderType() != OP_SELL) continue;
          UpdatePosition(OrderTicket(), OrderMagicNumber(), OrderType(),
                            OrderOpenPrice(), OrderTakeProfit(), OrderStopLoss(), OrderSwap(), OrderProfit(),
