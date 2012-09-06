@@ -27,7 +27,7 @@
    int GetDeleteRequest(double prices[]);
    int SetMark();
    int ClearMark();
-   int UpdatePosition(int, int, int, double, double, double, int, double);
+   int UpdatePosition(int, int, int, double, double, double, int, double, double, string);
    int SetAccountInfo(double);
 #import
 
@@ -126,7 +126,8 @@ void doEachTick() {
          if (OrderSymbol() != Symbol()) continue;
          if (OrderType() != OP_BUY && OrderType() != OP_SELL) continue;
          UpdatePosition(OrderTicket(), OrderMagicNumber(), OrderType(),
-                           OrderOpenPrice(), OrderTakeProfit(), OrderStopLoss(), OrderSwap(), OrderProfit());
+                           OrderOpenPrice(), OrderTakeProfit(), OrderStopLoss(), OrderSwap(), OrderProfit(),
+                           OrderLots(), OrderSymbol());
          
       }   
       ClearMark();
