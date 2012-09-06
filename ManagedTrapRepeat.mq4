@@ -25,6 +25,10 @@
    int UpdateShortTrap(double prices[]);
    int UpdateLongPosition(double prices[], int lots[]);
    int GetDeleteRequest(double prices[]);
+   int SetMark();
+   int ClearMark();
+   int UpdatePosition(int, int, int, double, double, double, int, double);
+   int SetAccountInfo(double);
 #import
 
 //--- input parameters
@@ -113,6 +117,21 @@ void doEachTick() {
    deleteShort();
    updateShort();
    updateLong();
+   
+   SetAccountInfo(AccountBalance());
+   
+   if (SetMark() == 1) {
+      for (i = 0; i < OrdersTotal(); i++) {
+         if (!OrderSelect(i, SELECT_BY_POS)) continue;
+         if (OrderSymbol() != Symbol()) continue;
+         if (OrderType() != OP_BUY && OrderType() != OP_SELL) continue;
+         UpdatePosition(OrderTicket(), OrderMagicNumber(), OrderType(),
+                           OrderOpenPrice(), OrderTakeProfit(), OrderStopLoss(), OrderSwap(), OrderProfit());
+         
+      }   
+      ClearMark();
+   }
+   
 }
 
 void deleteShort() {
