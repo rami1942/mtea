@@ -27,7 +27,7 @@
    int SetMark();
    int ClearMark();
    int UpdatePosition(int, int, int, double, double, double, int, double, double, string);
-   int SetAccountInfo(double);
+   int SetAccountInfo(double, double);
 #import
 
 //--- input parameters
@@ -116,7 +116,7 @@ void doEachTick() {
    deleteShort();
    updateShort();
    
-   SetAccountInfo(AccountBalance());
+   SetAccountInfo(AccountBalance(), AccountMargin());
    
    if (SetMark() == 1) {
       for (i = 0; i < OrdersTotal(); i++) {
@@ -171,7 +171,6 @@ void updateShort() {
       if (OrderMagicNumber() < 100000 || OrderMagicNumber() >= 200000) continue;
       if (OrderType() != OP_BUY && OrderType() != OP_SELL) continue;
       prices[j] = (OrderMagicNumber() - 100000) / 100.0;       
-//      prices[j] = OrderOpenPrice();
       j++;
    }
    prices[j] = 0.0;
