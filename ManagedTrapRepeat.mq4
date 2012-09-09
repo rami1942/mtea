@@ -23,12 +23,11 @@
    int GetTrapLots();
    double GetTakeProfitWidth();
    int UpdateShortTrap(double prices[]);
-   int UpdateLongPosition(double prices[], int lots[]);
    int GetDeleteRequest(double prices[]);
    int SetMark();
    int ClearMark();
    int UpdatePosition(int, int, int, double, double, double, int, double, double, string);
-   int SetAccountInfo(double);
+   int SetAccountInfo(double, double);
 #import
 
 //--- input parameters
@@ -116,9 +115,8 @@ void doEachTick() {
    UpdatePrice(Bid);
    deleteShort();
    updateShort();
-   updateLong();
    
-   SetAccountInfo(AccountBalance());
+   SetAccountInfo(AccountBalance(), AccountMargin());
    
    if (SetMark() == 1) {
       for (i = 0; i < OrdersTotal(); i++) {
@@ -162,33 +160,6 @@ void deleteShort() {
    }
 }
 
-void updateLong() {
-   double prices[];
-   int lots[];
-   
-   int n = OrdersTotal();
-   ArrayResize(prices, n + 1);
-   ArrayResize(lots, n + 1);
-
-   int j = 0;
-   for (int i = 0; i < n; i++) {
-      if (!OrderSelect(i, SELECT_BY_POS)) continue;
-      if (OrderType() != OP_BUY || OrderSymbol() != Symbol()) continue;
-      
-      prices[j] = OrderOpenPrice();
-      lots[j] = OrderLots() * 100000;
-      
-      j++;
-   }
-   prices[j] = 0.0;
-   lots[j] = 0;
-   
-   if (!UpdateLongPosition(prices, lots)) {
-      Print("UpdateLong failed.");
-   }
-   
-}
-
 void updateShort() {
    double prices[];
    int n = OrdersTotal();
@@ -200,7 +171,6 @@ void updateShort() {
       if (OrderMagicNumber() < 100000 || OrderMagicNumber() >= 200000) continue;
       if (OrderType() != OP_BUY && OrderType() != OP_SELL) continue;
       prices[j] = (OrderMagicNumber() - 100000) / 100.0;       
-//      prices[j] = OrderOpenPrice();
       j++;
    }
    prices[j] = 0.0;
