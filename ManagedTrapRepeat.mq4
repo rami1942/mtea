@@ -22,7 +22,6 @@
    int UpdatePrice(double price);
    int GetTrapLots();
    double GetTakeProfitWidth();
-   int UpdateShortTrap(double prices[]);
    int GetDeleteRequest(double prices[]);
    int SetMark();
    int ClearMark();
@@ -114,7 +113,6 @@ void doEachTick() {
    
    UpdatePrice(Bid);
    deleteShort();
-   updateShort();
    
    SetAccountInfo(AccountBalance(), AccountMargin());
    
@@ -155,27 +153,8 @@ void deleteShort() {
       
       OrderDelete(ticket);
       
-      
       i++;
    }
-}
-
-void updateShort() {
-   double prices[];
-   int n = OrdersTotal();
-   ArrayResize(prices, n + 1);
-   
-   int j = 0;
-   for (int i = 0; i < n; i++) {
-      if (!OrderSelect(i, SELECT_BY_POS)) continue;
-      if (OrderMagicNumber() < 100000 || OrderMagicNumber() >= 200000) continue;
-      if (OrderType() != OP_BUY && OrderType() != OP_SELL) continue;
-      prices[j] = (OrderMagicNumber() - 100000) / 100.0;       
-      j++;
-   }
-   prices[j] = 0.0;
-   UpdateShortTrap(prices);
-
 }
 
 void processOrder(double targetPrice, double lots, int magic, double targetPips, bool isBuy) {   
