@@ -27,6 +27,8 @@
    int ClearMark();
    int UpdatePosition(int, int, int, double, double, double, int, double, double, string);
    int SetAccountInfo(double, double);
+   int GetHistoryRequest(int ticketNo[], int posCd[]);
+   int InsertHistory(int, int, int, int, string, double, string, double, double, double, string, double, double, double);
 #import
 
 //--- input parameters
@@ -128,6 +130,7 @@ void doEachTick() {
       ClearMark();
    }
    
+   processHistory();
 }
 
 void deleteShort() {
@@ -250,3 +253,43 @@ int getTicket(int magic) {
    }
    return(-1);
 }
+
+void processHistory() {
+
+   int tickets[128], pos[128];
+   
+   if (GetHistoryRequest(tickets, pos) == 1) {
+      int i = 0;
+      while(true) {
+         if (tickets[i] == 0) break;
+         
+         if (!OrderSelect(tickets[i], SELECT_BY_TICKET)) {
+            Print("ticket no ", tickets[i], " is not exist.");
+            i++;
+            continue;
+         }
+         
+         int magicNo = OrderMagicNumber();
+         string openDt = TimeToStr(OrderOpenTime());
+         double lots = OrderLots();
+         string symbol = OrderSymbol();
+         
+         double openPrice = OrderOpenPrice();
+         double slPrice = OrderStopLoss();
+         double tpPrice = OrderTakeProfit();
+         
+         string closeDt = TimeToStr(OrderCloseTime());
+         double closePrice = OrderClosePrice();
+         
+         double swapPoint = OrderSwap();
+         double profit = OrderProfit();
+         
+         InsertHistory(tickets[i], magicNo, OrderType(), pos[i], openDt, lots, symbol, 
+            openPrice, slPrice, tpPrice, closeDt, closePrice, swapPoint, profit);
+         
+         i++;
+      }
+   }
+
+}
+
