@@ -29,6 +29,7 @@
    int SetAccountInfo(double, double);
    int GetHistoryRequest(int ticketNo[], int posCd[]);
    int InsertHistory(int, int, int, int, string, double, string, double, double, double, string, double, double, double);
+   int GetToggleTpRequest(int ticketNo[], double tpPrice[]);
 #import
 
 //--- input parameters
@@ -131,6 +132,7 @@ void doEachTick() {
    }
    
    processHistory();
+   processTp();
 }
 
 void deleteShort() {
@@ -254,6 +256,7 @@ int getTicket(int magic) {
    return(-1);
 }
 
+// 履歴の要求があった場合に履歴を取得し、position_historyに追加する
 void processHistory() {
 
    int tickets[128], pos[128];
@@ -290,6 +293,27 @@ void processHistory() {
          i++;
       }
    }
-
 }
 
+// トラップのTP変更の要求があった場合にTPを変更する
+void processTp() {
+   int tickets[128];
+   double tpPrice[128];
+   
+   if (GetToggleTpRequest(tickets, tpPrice) == 1) {
+      int i = 0;
+      while(true) {
+         if (tickets[i] == 0) break;
+         
+         if (!OrderSelect(tickets[i], SELECT_BY_TICKET)) {
+            Print("ticket no ", tickets[i], " is not exist.");
+            i++;
+            continue;
+         }
+         
+         OrderModify(OrderTicket(), OrderOpenPrice(), OrderStopLoss(), tpPrice[i], 0, CLR_NONE);
+         
+         i++;
+      }
+   }
+}
